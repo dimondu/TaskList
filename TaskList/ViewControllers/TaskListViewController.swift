@@ -84,6 +84,22 @@ class TaskListViewController: UITableViewController {
         present(alert, animated: true)
     }
     
+    private func updateAlert(_ task: Task, withTitle title: String, andMessage message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let saveAction = UIAlertAction(title: "Save", style: .default) { [unowned self] _ in
+            guard let taskName = alert.textFields?.first?.text, !taskName.isEmpty else { return }
+            update(task, newName: taskName)
+            tableView.reloadData()
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .destructive)
+        alert.addAction(saveAction)
+        alert.addAction(cancelAction)
+        alert.addTextField { textField in
+            textField.text = task.title
+        }
+        present(alert, animated: true)
+    }
+    
     private func save(_ taskName: String) {
         let task = Task(context: viewContext)
         task.title = taskName
@@ -91,6 +107,30 @@ class TaskListViewController: UITableViewController {
         
         let cellIndex = IndexPath(row: taskList.count - 1, section: 0)
         tableView.insertRows(at: [cellIndex], with: .automatic)
+        
+        if viewContext.hasChanges {
+            do {
+                try viewContext.save()
+            } catch let error {
+                print(error)
+            }
+        }
+    }
+    
+    private func delete(_ task: Task) {
+        viewContext.delete(task)
+        
+        if viewContext.hasChanges {
+            do {
+                try viewContext.save()
+            } catch let error {
+                print(error)
+            }
+        }
+    }
+    
+    private func update(_ task: Task, newName: String) {
+        task.title = newName
         
         if viewContext.hasChanges {
             do {
@@ -121,44 +161,15 @@ extension TaskListViewController {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         let task = taskList[indexPath.row]
         if editingStyle == .delete {
-            viewContext.delete(task)
-            do {
-                try viewContext.save()
-                taskList.remove(at: indexPath.row)
-                tableView.deleteRows(at: [indexPath], with: .automatic)
-            } catch let error {
-                print(error)
-            }
+            delete(task)
+            taskList.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .automatic)
         }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
         let task = taskList[indexPath.row]
-        
-        let alert = UIAlertController(title: "Update Task", message: "What do you want to do?", preferredStyle: .alert)
-        let saveAction = UIAlertAction(title: "Save", style: .default) { [unowned self] _ in
-            guard let taskName = alert.textFields?.first?.text, !taskName.isEmpty else { return }
-            task.title = taskName
-            
-            if viewContext.hasChanges {
-                do {
-                    try viewContext.save()
-                    tableView.reloadData()
-                } catch let error {
-                    print(error)
-                }
-            }
-        }
-        let cancelAction = UIAlertAction(title: "Cancel", style: .destructive)
-        alert.addAction(saveAction)
-        alert.addAction(cancelAction)
-        alert.addTextField { textField in
-            textField.text = task.title
-        }
-        
-        present(alert, animated: true)
+        updateAlert(task, withTitle: "Update Task", andMessage: "What do you want to do?")
     }
 }
-
 

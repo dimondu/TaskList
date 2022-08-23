@@ -33,20 +33,5 @@ class StorageManager {
             }
         }
     }
-    
-    func update(_ task: Task, newName: String) {
-        let context = persistentContainer.viewContext
-        task.title = newName
-        
-        if context.hasChanges {
-            do {
-                try context.save()
-            } catch {
-                let nserror = error as NSError
-                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
-            }
-        }
-    }
-
 }
 
