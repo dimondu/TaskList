@@ -58,6 +58,7 @@
 		A8B9AC9228B29E680069665A /* TaskList */ = {
 			isa = PBXGroup;
 			children = (
+				A8B9AC9C28B29E680069665A /* TaskList.xcdatamodeld */,
 				F4074F3428B36E80009456F8 /* App */,
 				F4074F3528B36E8D009456F8 /* ViewControllers */,
 				F4074F3A28B3706D009456F8 /* Services */,
@@ -73,7 +74,6 @@
 				A8B9AC9328B29E680069665A /* AppDelegate.swift */,
 				A8B9AC9528B29E680069665A /* SceneDelegate.swift */,
 				A8B9ACA428B29E680069665A /* Info.plist */,
-				A8B9AC9C28B29E680069665A /* TaskList.xcdatamodeld */,
 			);
 			path = App;
 			sourceTree = "<group>";
